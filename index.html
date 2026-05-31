@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Kakuro" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <meta
+      name="description"
+      content="Mobile-first Kakuro with notes, combination cheatsheet, and three difficulty levels."
+    />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <title>Simple Kakuro</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1 class="title">Simple Kakuro</h1>
+        <div class="status-bar">
+          <span id="mistakes" class="mistakes" aria-live="polite">Mistakes: 0</span>
+          <span id="puzzle-id" class="puzzle-id"></span>
+        </div>
+      </header>
+
+      <section class="controls" aria-label="Game controls">
+        <label class="difficulty-label">
+          <span class="sr-only">Difficulty</span>
+          <select id="difficulty" class="difficulty-select">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </label>
+        <button type="button" id="reset" class="btn">Reset</button>
+        <button type="button" id="new-game" class="btn btn-primary">New Game</button>
+      </section>
+
+      <div id="win-banner" class="win-banner hidden" role="status">
+        Puzzle complete!
+      </div>
+
+      <main class="game-area">
+        <div
+          id="board"
+          class="board"
+          role="grid"
+          aria-label="Kakuro board"
+        ></div>
+
+        <aside class="sidebar">
+          <div class="action-row">
+            <button type="button" id="note-mode" class="btn btn-toggle" aria-pressed="false">
+              Notes
+            </button>
+            <button type="button" id="clear-notes" class="btn">Clear Notes</button>
+            <button type="button" id="undo" class="btn" disabled>Undo</button>
+            <button type="button" id="cheatsheet" class="btn">Cheatsheet</button>
+          </div>
+
+          <div id="numpad" class="numpad" role="group" aria-label="Number pad">
+            <button type="button" class="numpad-btn" data-digit="1">1</button>
+            <button type="button" class="numpad-btn" data-digit="2">2</button>
+            <button type="button" class="numpad-btn" data-digit="3">3</button>
+            <button type="button" class="numpad-btn" data-digit="4">4</button>
+            <button type="button" class="numpad-btn" data-digit="5">5</button>
+            <button type="button" class="numpad-btn" data-digit="6">6</button>
+            <button type="button" class="numpad-btn" data-digit="7">7</button>
+            <button type="button" class="numpad-btn" data-digit="8">8</button>
+            <button type="button" class="numpad-btn" data-digit="9">9</button>
+            <button type="button" id="erase" class="numpad-btn numpad-erase">Erase</button>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="footer">
+        <span id="puzzle-id-footer" class="puzzle-id"></span>
+      </footer>
+    </div>
+
+    <div id="cheatsheet-overlay" class="cheatsheet-overlay hidden" aria-hidden="true"></div>
+    <div id="cheatsheet-panel" class="cheatsheet-panel hidden" role="dialog" aria-labelledby="cheatsheet-title">
+      <header class="cheatsheet-header">
+        <div>
+          <h2 id="cheatsheet-title">Combination Cheatsheet</h2>
+          <p id="cheatsheet-subtitle" class="cheatsheet-subtitle"></p>
+        </div>
+        <button type="button" id="cheatsheet-close" class="btn cheatsheet-close" aria-label="Close">
+          Close
+        </button>
+      </header>
+      <label class="cheatsheet-filter">
+        <span>Filter by length</span>
+        <select id="cheatsheet-length">
+          <option value="all">All lengths</option>
+          <option value="2">2 cells</option>
+          <option value="3">3 cells</option>
+          <option value="4">4 cells</option>
+          <option value="5">5 cells</option>
+          <option value="6">6 cells</option>
+          <option value="7">7 cells</option>
+          <option value="8">8 cells</option>
+          <option value="9">9 cells</option>
+        </select>
+      </label>
+      <div id="cheatsheet-list" class="cheatsheet-list"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
