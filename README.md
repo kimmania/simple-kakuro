@@ -10,6 +10,7 @@ A mobile-first Kakuro game built with vanilla TypeScript. Play in the browser â€
 - **Notes mode:** Tap pencil marks for candidate digits
 - **Auto-prune notes:** Impossible candidates are removed when values are placed in a run
 - **Combination cheatsheet:** Reference panel for valid digit sums by run length
+- **Help:** In-app guide explaining rules and controls
 - **Undo:** Revert the last digit, note, or bulk note change
 - **Reset:** Clear your entries and start the current puzzle over
 - **Mistake counter:** Tracks wrong entries against the solution

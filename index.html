@@ -21,7 +21,12 @@
   <body>
     <div id="app">
       <header class="header">
-        <h1 class="title">Simple Kakuro</h1>
+        <div class="header-title-row">
+          <h1 class="title">Simple Kakuro</h1>
+          <button type="button" id="help" class="btn btn-help" aria-haspopup="dialog">
+            Help
+          </button>
+        </div>
         <div class="status-bar">
           <span id="mistakes" class="mistakes" aria-live="polite">Mistakes: 0</span>
           <span id="puzzle-id" class="puzzle-id"></span>
@@ -109,6 +114,60 @@
         </select>
       </label>
       <div id="cheatsheet-list" class="cheatsheet-list"></div>
+    </div>
+
+    <div id="help-overlay" class="help-overlay hidden" aria-hidden="true"></div>
+    <div id="help-panel" class="help-panel hidden" role="dialog" aria-labelledby="help-title">
+      <header class="help-header">
+        <h2 id="help-title">How to Play</h2>
+        <button type="button" id="help-close" class="btn help-close" aria-label="Close">
+          Close
+        </button>
+      </header>
+      <div class="help-body">
+        <section class="help-section">
+          <h3>Goal</h3>
+          <p>
+            Fill every light-blue cell with a digit from <strong>1–9</strong> so that each
+            horizontal and vertical run adds up to its clue. No digit may repeat within a
+            single run.
+          </p>
+        </section>
+
+        <section class="help-section">
+          <h3>Reading the grid</h3>
+          <ul>
+            <li><strong>Light cells</strong> — enter your answers here.</li>
+            <li>
+              <strong>Dark cells with numbers</strong> — clues. The top-left number is the
+              down sum; the bottom-right is the right sum.
+            </li>
+            <li><strong>Plain dark cells</strong> — empty blocks that separate runs (not fillable).</li>
+          </ul>
+        </section>
+
+        <section class="help-section">
+          <h3>Controls</h3>
+          <ul>
+            <li>Tap a light cell, then tap a number on the pad to enter a digit.</li>
+            <li><strong>Notes</strong> — pencil marks for possible values in a cell.</li>
+            <li><strong>Clear Notes</strong> — remove all pencil marks.</li>
+            <li><strong>Undo</strong> — revert your last change.</li>
+            <li><strong>Erase</strong> — clear the selected cell (or remove a note in Notes mode).</li>
+            <li><strong>Cheatsheet</strong> — valid digit combinations by run length and sum.</li>
+          </ul>
+        </section>
+
+        <section class="help-section">
+          <h3>Tips</h3>
+          <ul>
+            <li>Select a cell to highlight its runs.</li>
+            <li>Impossible notes are removed automatically when you place digits.</li>
+            <li>Wrong entries count toward the mistake total shown in the header.</li>
+            <li>Choose Easy, Medium, or Hard, then tap <strong>New Game</strong> for a fresh puzzle.</li>
+          </ul>
+        </section>
+      </div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

@@ -86,6 +86,21 @@ body {
   flex-shrink: 0;
 }
 
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.btn-help {
+  min-height: 32px;
+  min-width: auto;
+  padding: 0 10px;
+  font-size: 0.78rem;
+  flex-shrink: 0;
+}
+
 .title {
   margin: 0;
   font-size: 1.1rem;
@@ -503,6 +518,87 @@ body {
   line-height: 1.4;
 }
 
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+}
+
+.help-overlay.hidden {
+  display: none;
+}
+
+.help-panel {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(100%, 640px);
+  max-height: min(80dvh, 620px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 12px calc(12px + var(--safe-bottom));
+}
+
+.help-panel.hidden {
+  display: none;
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.help-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.help-body {
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.help-section h3 {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.help-section p,
+.help-section ul {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.help-section ul {
+  padding-left: 1.2rem;
+}
+
+.help-section li + li {
+  margin-top: 4px;
+}
+
+.help-section strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
 @media (orientation: landscape) and (min-height: 500px) {
   body {
     overflow: auto;
@@ -590,7 +686,8 @@ body {
     text-align: center;
   }
 
-  .cheatsheet-panel {
+  .cheatsheet-panel,
+  .help-panel {
     bottom: auto;
     top: 50%;
     transform: translate(-50%, -50%);

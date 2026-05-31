@@ -20,6 +20,7 @@ import {
   openCheatsheet,
   setupLengthFilter,
 } from './ui/cheatsheet';
+import { bindHelpHandlers, closeHelp } from './ui/help';
 import {
   bindControlHandlers,
   bindNumpadHandlers,
@@ -57,6 +58,7 @@ export class KakuroApp {
     });
     bindCheatsheetHandlers();
     setupLengthFilter();
+    bindHelpHandlers();
 
     document.addEventListener('keydown', (event) => this.handleKeydown(event));
 
@@ -135,6 +137,7 @@ export class KakuroApp {
 
   private handleCheatsheet(): void {
     if (!this.state) return;
+    closeHelp();
     const highlight = getSelectedRunInfo(this.state) ?? undefined;
     openCheatsheet(highlight);
   }
@@ -204,15 +207,16 @@ export class KakuroApp {
   }
 
   private handleKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      closeCheatsheet();
+      closeHelp();
+      return;
+    }
+
     if (!this.state || this.state.status === 'won') return;
 
     const target = event.target as HTMLElement;
     if (target.tagName === 'SELECT') return;
-
-    if (event.key === 'Escape') {
-      closeCheatsheet();
-      return;
-    }
 
     if ((event.metaKey || event.ctrlKey) && event.key === 'z') {
       event.preventDefault();
