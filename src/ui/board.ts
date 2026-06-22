@@ -11,11 +11,15 @@ type BoardElements = {
   container: HTMLElement;
   cells: (HTMLElement | null)[][];
   noteSpans: (HTMLElement[] | null)[][];
+  valueEls: (HTMLElement | null)[][];
+  clueEls: (HTMLElement | null)[][];
+  downEls: (HTMLElement | null)[][];
+  rightEls: (HTMLElement | null)[][];
 };
 
 export function createBoard(container: HTMLElement): BoardElements {
   container.innerHTML = '';
-  return { container, cells: [], noteSpans: [] };
+  return { container, cells: [], noteSpans: [], valueEls: [], clueEls: [], downEls: [], rightEls: [] };
 }
 
 function ensureBoardSize(board: BoardElements, state: GameState): void {
@@ -30,10 +34,18 @@ function ensureBoardSize(board: BoardElements, state: GameState): void {
   board.container.innerHTML = '';
   board.cells = [];
   board.noteSpans = [];
+  board.valueEls = [];
+  board.clueEls = [];
+  board.downEls = [];
+  board.rightEls = [];
 
   for (let row = 0; row < rows; row++) {
     board.cells[row] = [];
     board.noteSpans[row] = [];
+    board.valueEls[row] = [];
+    board.clueEls[row] = [];
+    board.downEls[row] = [];
+    board.rightEls[row] = [];
     for (let col = 0; col < cols; col++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
@@ -71,6 +83,10 @@ function ensureBoardSize(board: BoardElements, state: GameState): void {
       board.container.appendChild(cell);
       board.cells[row][col] = cell;
       board.noteSpans[row][col] = spans;
+      board.valueEls[row][col] = valueEl;
+      board.clueEls[row][col] = clueEl;
+      board.downEls[row][col] = downEl;
+      board.rightEls[row][col] = rightEl;
     }
   }
 }
@@ -97,10 +113,10 @@ export function renderBoard(
       const key = `${row},${col}`;
       const layoutCell = state.layout[row][col];
       const cellEl = board.cells[row][col]!;
-      const valueEl = cellEl.querySelector('.cell-value') as HTMLElement;
-      const clueEl = cellEl.querySelector('.cell-clue') as HTMLElement;
-      const downEl = cellEl.querySelector('.clue-down') as HTMLElement;
-      const rightEl = cellEl.querySelector('.clue-right') as HTMLElement;
+      const valueEl = board.valueEls[row][col]!;
+      const clueEl = board.clueEls[row][col]!;
+      const downEl = board.downEls[row][col]!;
+      const rightEl = board.rightEls[row][col]!;
       const noteSpans = board.noteSpans[row][col]!;
 
       cellEl.className = 'cell';

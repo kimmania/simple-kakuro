@@ -57,6 +57,13 @@ function buildCellRunMap(runs: RunDef[]): Map<string, RunDef[]> {
   return map;
 }
 
+/**
+ * Solves a mask by filling every playable cell with digits 1–9 such that no
+ * digit repeats within a single run. Clue sums are derived from the completed
+ * grid afterward (in buildClueMap), so the solver does not need to enforce a
+ * target sum during backtracking — any complete non-repeating assignment
+ * produces a valid Kakuro puzzle.
+ */
 function solveMask(mask: Mask, runs: RunDef[]): Record<string, number> | null {
   const playCells = getPlayCells(mask);
   const cellRuns = buildCellRunMap(runs);

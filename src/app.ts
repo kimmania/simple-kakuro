@@ -39,7 +39,8 @@ export class KakuroApp {
   private board = createBoard(document.getElementById('board')!);
   private activeDigit: number | null = null;
   private loading = false;
-  private undoStack: HistorySnapshot[] = [];
+  private lastSnapshot: HistorySnapshot | null = null;
+  private saveDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   async init(): Promise<void> {
     bindBoardClick(this.board, (row, col) => this.selectCell(row, col));
@@ -102,13 +103,18 @@ export class KakuroApp {
   }
 
   private clearUndo(): void {
-    this.undoStack = [];
+    this.lastSnapshot = null;
     setUndoEnabled(false);
+  }
+
+  private debouncedSave(state: GameState): void {
+    if (this.saveDebounceTimer) clearTimeout(this.saveDebounceTimer);
+    this.saveDebounceTimer = setTimeout(() => saveGame(state), 250);
   }
 
   private recordUndoPoint(): void {
     if (!this.state || this.state.status === 'won') return;
-    this.undoStack = [captureSnapshot(this.state)];
+    this.lastSnapshot = captureSnapshot(this.state);
   }
 
   private selectCell(row: number, col: number): void {
@@ -143,8 +149,9 @@ export class KakuroApp {
   }
 
   private handleUndo(): void {
-    if (!this.state || this.undoStack.length === 0) return;
-    const snapshot = this.undoStack.pop()!;
+    if (!this.state || this.lastSnapshot === null) return;
+    const snapshot = this.lastSnapshot;
+    this.lastSnapshot = null;
     applySnapshot(this.state, snapshot);
     this.refresh();
   }
@@ -176,6 +183,7 @@ export class KakuroApp {
         digit,
         this.state.puzzle.solution,
       );
+      // Mistakes are cumulative — overwriting a wrong value later does not decrement the counter.
       this.state.mistakes += mistakeDelta;
       if (isSolved(this.state.layout, this.state.puzzle.solution)) {
         this.state.status = 'won';
@@ -275,11 +283,11 @@ export class KakuroApp {
     updatePuzzleId(this.state.puzzle.id);
     setNoteMode(this.state.noteMode);
     setActiveDigit(this.activeDigit);
-    setUndoEnabled(this.undoStack.length > 0);
+    setUndoEnabled(this.lastSnapshot !== null);
     showWinBanner(this.state.status === 'won');
 
     if (this.state.status === 'playing') {
-      saveGame(this.state);
+      this.debouncedSave(this.state);
     } else {
       clearSavedGame();
     }

@@ -7,6 +7,29 @@ import {
 
 let entries: CheatsheetEntry[] | null = null;
 
+function createCheatsheetItem(
+  entry: CheatsheetEntry,
+  highlight?: { sum: number; length: number },
+): HTMLElement {
+  const item = document.createElement('details');
+  item.className = 'cheatsheet-item';
+  if (highlight && entry.sum === highlight.sum && entry.length === highlight.length) {
+    item.open = true;
+    item.classList.add('highlight');
+  }
+
+  const summary = document.createElement('summary');
+  summary.textContent = `Sum ${entry.sum}, ${entry.length} cells (${entry.combos.length})`;
+  item.appendChild(summary);
+
+  const combosEl = document.createElement('div');
+  combosEl.className = 'cheatsheet-combos';
+  combosEl.textContent = entry.combos.map(formatCombo).join(' · ');
+  item.appendChild(combosEl);
+
+  return item;
+}
+
 function getEntries(): CheatsheetEntry[] {
   if (!entries) entries = buildCheatsheet();
   return entries;
@@ -36,23 +59,7 @@ function renderList(highlight?: { sum: number; length: number }): void {
   }
 
   for (const entry of filtered) {
-    const item = document.createElement('details');
-    item.className = 'cheatsheet-item';
-    if (highlight && entry.sum === highlight.sum && entry.length === highlight.length) {
-      item.open = true;
-      item.classList.add('highlight');
-    }
-
-    const summary = document.createElement('summary');
-    summary.textContent = `Sum ${entry.sum}, ${entry.length} cells (${entry.combos.length})`;
-    item.appendChild(summary);
-
-    const combosEl = document.createElement('div');
-    combosEl.className = 'cheatsheet-combos';
-    combosEl.textContent = entry.combos.map(formatCombo).join(' · ');
-    item.appendChild(combosEl);
-
-    list.appendChild(item);
+    list.appendChild(createCheatsheetItem(entry, highlight));
   }
 
   if (filtered.length === 0) {
@@ -107,19 +114,7 @@ export function setupLengthFilter(): void {
         : getEntries().filter((e) => e.length === length);
 
     for (const entry of filtered) {
-      const item = document.createElement('details');
-      item.className = 'cheatsheet-item';
-
-      const summary = document.createElement('summary');
-      summary.textContent = `Sum ${entry.sum}, ${entry.length} cells (${entry.combos.length})`;
-      item.appendChild(summary);
-
-      const combosEl = document.createElement('div');
-      combosEl.className = 'cheatsheet-combos';
-      combosEl.textContent = entry.combos.map(formatCombo).join(' · ');
-      item.appendChild(combosEl);
-
-      list.appendChild(item);
+      list.appendChild(createCheatsheetItem(entry));
     }
   });
 }
