@@ -53,6 +53,8 @@ export class KakuroApp {
       onCheatsheet: () => this.handleCheatsheet(),
       onDifficultyChange: () => void this.newGame(),
     });
+
+    document.getElementById('play-again')?.addEventListener('click', () => void this.newGame());
     bindNumpadHandlers({
       onDigit: (digit) => this.handleDigit(digit),
       onErase: () => this.handleErase(),
