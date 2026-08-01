@@ -1,4 +1,5 @@
 import type { Difficulty } from '../kakuro/types';
+import type { RunSummary } from '../kakuro/runs';
 
 export function getDifficultySelect(): HTMLSelectElement {
   return document.getElementById('difficulty') as HTMLSelectElement;
@@ -85,4 +86,28 @@ export function setActiveDigit(digit: number | null): void {
     const value = parseInt(el.dataset.digit ?? '', 10);
     el.classList.toggle('active', digit !== null && value === digit);
   });
+}
+
+function formatRunSummary(summary: RunSummary): string {
+  const label = summary.direction === 'across' ? 'Across' : 'Down';
+  if (summary.placed === 0) {
+    return `${label} ${summary.sum} · ${summary.emptyCells} cells`;
+  }
+  if (summary.emptyCells === 0) {
+    return `${label} ${summary.sum} · complete`;
+  }
+  return `${label} ${summary.sum} − ${summary.placed} placed = ${summary.remaining} left · ${summary.emptyCells} cells`;
+}
+
+export function updateRunInfo(summaries: RunSummary[]): void {
+  const el = document.getElementById('run-info');
+  if (!el) return;
+  el.replaceChildren(
+    ...summaries.map((summary) => {
+      const line = document.createElement('div');
+      line.className = 'run-info-line';
+      line.textContent = formatRunSummary(summary);
+      return line;
+    }),
+  );
 }

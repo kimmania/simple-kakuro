@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { getCombinations, minSum, maxSum, isValidSum } from '../src/kakuro/combinations';
 import { getRunCandidates, commitValue } from '../src/kakuro/candidates';
 import { parseLayout } from '../src/kakuro/layout';
-import { extractRuns } from '../src/kakuro/runs';
+import { extractRuns, summarizeRun } from '../src/kakuro/runs';
 import { createGameState, pickRandomPuzzle, resetGameState } from '../src/kakuro/puzzle';
 import type { Difficulty, KakuroPuzzle } from '../src/kakuro/types';
 import { RECENT_PUZZLE_COUNT } from '../src/kakuro/types';
@@ -174,5 +174,36 @@ describe('resetGameState', () => {
 describe('constants', () => {
   it('tracks recent puzzle window', () => {
     expect(RECENT_PUZZLE_COUNT).toBe(20);
+  });
+});
+
+describe('summarizeRun', () => {
+  it('reports placed and remaining sums for the selection readout', () => {
+    const state = createGameState(SAMPLE_PUZZLE);
+    const run = state.runs.find((r) => r.direction === 'across' && r.sum === 30);
+    expect(run).toBeDefined();
+    if (!run) return;
+
+    // Givens 7, 1, 8 in the run; cells (3,2) and (3,5)–(3,7) empty.
+    const summary = summarizeRun(state.layout, run);
+    expect(summary.direction).toBe('across');
+    expect(summary.sum).toBe(30);
+    expect(summary.placed).toBe(16);
+    expect(summary.remaining).toBe(14);
+    expect(summary.emptyCells).toBe(run.cells.length - 3);
+
+    // Place a value and the remaining sum drops.
+    const empty = run.cells.find(({ row, col }) => {
+      const cell = state.layout[row][col];
+      return cell.kind === 'play' && cell.value === 0;
+    });
+    if (!empty) return;
+    const cell = state.layout[empty.row][empty.col];
+    if (cell.kind === 'play') cell.value = 4;
+
+    const after = summarizeRun(state.layout, run);
+    expect(after.placed).toBe(20);
+    expect(after.remaining).toBe(10);
+    expect(after.emptyCells).toBe(summary.emptyCells - 1);
   });
 });

@@ -2,11 +2,7 @@ import { getCombinations, minSum, maxSum } from './combinations';
 import type { LayoutCell, Run } from './types';
 import { isPlayCell } from './types';
 import { findRunIndex } from './runs';
-
-export function getPlayValue(layout: LayoutCell[][], row: number, col: number): number {
-  const cell = layout[row][col];
-  return isPlayCell(cell) ? cell.value : 0;
-}
+import { getPlayValue } from './layout';
 
 function canAchieveSum(sum: number, length: number, used: Set<number>): boolean {
   if (length === 0) return sum === 0;

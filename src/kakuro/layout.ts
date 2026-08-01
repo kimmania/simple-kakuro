@@ -1,5 +1,11 @@
 import type { ClueCell, LayoutCell, PlayCell } from './types';
 
+/** Current placed value at a position, or 0 for non-play/empty cells. */
+export function getPlayValue(layout: LayoutCell[][], row: number, col: number): number {
+  const cell = layout[row][col];
+  return cell.kind === 'play' ? cell.value : 0;
+}
+
 /** Parse compact puzzle cell strings into layout cells. */
 export function parseCellString(raw: string): LayoutCell {
   if (raw === '#') return { kind: 'blocked' };

@@ -1,6 +1,6 @@
 import type { LayoutCell, Run } from './types';
 import { cellKey, isPlayCell } from './types';
-import { getPlayValue } from './candidates';
+import { getPlayValue } from './layout';
 export function getRunConflicts(layout: LayoutCell[][], run: Run): Set<string> {
   const conflicts = new Set<string>();
   const seen = new Map<number, string>();

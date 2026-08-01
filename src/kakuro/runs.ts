@@ -1,5 +1,32 @@
 import type { LayoutCell, Run } from './types';
 import { isPlayCell } from './types';
+import { getPlayValue } from './layout';
+
+export interface RunSummary {
+  direction: 'across' | 'down';
+  sum: number;
+  placed: number;
+  remaining: number;
+  emptyCells: number;
+}
+
+/** Placed/remaining sums for a run, for the selection readout. */
+export function summarizeRun(layout: LayoutCell[][], run: Run): RunSummary {
+  let placed = 0;
+  let emptyCells = 0;
+  for (const { row, col } of run.cells) {
+    const value = getPlayValue(layout, row, col);
+    if (value === 0) emptyCells++;
+    else placed += value;
+  }
+  return {
+    direction: run.direction,
+    sum: run.sum,
+    placed,
+    remaining: run.sum - placed,
+    emptyCells,
+  };
+}
 
 export function extractRuns(layout: LayoutCell[][]): Run[] {
   const rows = layout.length;

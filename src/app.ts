@@ -5,6 +5,7 @@ import { commitValue, eraseCell, toggleNote } from './kakuro/candidates';
 import { pruneAllNotes } from './kakuro/candidates';
 import { applySnapshot, captureSnapshot, type HistorySnapshot } from './kakuro/history';
 import { resetGameState, startNewGame } from './kakuro/puzzle';
+import { getRunsForCell, summarizeRun, type RunSummary } from './kakuro/runs';
 import { clearSavedGame, loadSavedGame, saveGame } from './kakuro/storage';
 import { isSolved } from './kakuro/validate';
 import {
@@ -33,6 +34,7 @@ import {
   showWinBanner,
   updateMistakes,
   updatePuzzleId,
+  updateRunInfo,
 } from './ui/controls';
 
 export class KakuroApp {
@@ -286,12 +288,21 @@ export class KakuroApp {
     this.selectCell(next.row, next.col, true);
   }
 
+  private getSelectedRunSummaries(): RunSummary[] {
+    if (!this.state?.selected) return [];
+    const { row, col } = this.state.selected;
+    return getRunsForCell(this.state.runs, row, col).map((run) =>
+      summarizeRun(this.state!.layout, run),
+    );
+  }
+
   private refresh(): void {
     if (!this.state) return;
 
     renderBoard(this.board, this.state, this.activeDigit);
     updateMistakes(this.state.mistakes);
     updatePuzzleId(this.state.puzzle.id);
+    updateRunInfo(this.getSelectedRunSummaries());
     setNoteMode(this.state.noteMode);
     setActiveDigit(this.activeDigit);
     setUndoEnabled(this.lastSnapshot !== null);
