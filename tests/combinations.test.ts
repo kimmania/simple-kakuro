@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getCombinations, minSum, maxSum, isValidSum } from '../src/kakuro/combinations';
-import { getRunCandidates, commitValue } from '../src/kakuro/candidates';
+import { getRunCandidates, commitValue, autoFillNotes } from '../src/kakuro/candidates';
 import { parseLayout } from '../src/kakuro/layout';
 import { extractRuns, summarizeRun } from '../src/kakuro/runs';
 import { createGameState, pickRandomPuzzle, resetGameState } from '../src/kakuro/puzzle';
@@ -205,5 +205,47 @@ describe('summarizeRun', () => {
     expect(after.placed).toBe(20);
     expect(after.remaining).toBe(10);
     expect(after.emptyCells).toBe(summary.emptyCells - 1);
+  });
+});
+
+describe('autoFillNotes', () => {
+  it('fills empty cells with candidates and leaves filled cells alone', () => {
+    const layout = parseLayout([
+      ['#', 'd4', '#'],
+      ['r6', '.', '.'],
+      ['#', '.', '#'],
+    ]);
+    const runs = extractRuns(layout);
+
+    autoFillNotes(layout, runs);
+
+    // Across run sums 6 in 2 cells: {1,5},{2,4}.
+    // Down run sums 4 in 2 cells: {1,3}.
+    // Cell (1,1): across ∩ down = {1}.
+    const c11 = layout[1][1];
+    if (c11.kind === 'play') {
+      expect([...c11.notes].sort()).toEqual([1]);
+    }
+    // Cell (1,2): across only → {1,2,4,5}.
+    const c12 = layout[1][2];
+    if (c12.kind === 'play') {
+      expect([...c12.notes].sort()).toEqual([1, 2, 4, 5]);
+    }
+    // Cell (2,1): down only → {1,3}.
+    const c21 = layout[2][1];
+    if (c21.kind === 'play') {
+      expect([...c21.notes].sort()).toEqual([1, 3]);
+    }
+
+    // Filled cells keep value and gain no notes.
+    if (c11.kind === 'play') {
+      c11.value = 1;
+      c11.notes.clear(); // what commitValue does on a real placement
+    }
+    autoFillNotes(layout, runs);
+    if (c11.kind === 'play') {
+      expect(c11.value).toBe(1);
+      expect(c11.notes.size).toBe(0);
+    }
   });
 });

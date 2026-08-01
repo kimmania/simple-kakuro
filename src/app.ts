@@ -1,6 +1,6 @@
 import type { GameState } from './kakuro/types';
 import { isPlayCell } from './kakuro/types';
-import { clearNotesOnEmptyCells } from './kakuro/candidates';
+import { autoFillNotes, clearNotesOnEmptyCells } from './kakuro/candidates';
 import { commitValue, eraseCell, getCandidates, toggleNote } from './kakuro/candidates';
 import { pruneAllNotes } from './kakuro/candidates';
 import { applySnapshot, captureSnapshot, type HistorySnapshot } from './kakuro/history';
@@ -52,6 +52,7 @@ export class KakuroApp {
       onNewGame: () => void this.newGame(),
       onReset: () => this.handleReset(),
       onNoteMode: () => this.toggleNoteMode(),
+      onAutoNotes: () => this.handleAutoNotes(),
       onClearNotes: () => this.handleClearNotes(),
       onUndo: () => this.handleUndo(),
       onCheatsheet: () => this.handleCheatsheet(),
@@ -145,6 +146,13 @@ export class KakuroApp {
     if (!this.state || this.state.status === 'won') return;
     this.recordUndoPoint();
     clearNotesOnEmptyCells(this.state.layout);
+    this.refresh();
+  }
+
+  private handleAutoNotes(): void {
+    if (!this.state || this.state.status === 'won') return;
+    this.recordUndoPoint();
+    autoFillNotes(this.state.layout, this.state.runs);
     this.refresh();
   }
 

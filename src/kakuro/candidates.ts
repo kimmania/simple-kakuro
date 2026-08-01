@@ -232,3 +232,14 @@ export function clearNotesOnEmptyCells(layout: LayoutCell[][]): void {
     }
   }
 }
+
+/** Fill every empty cell's notes with its computed candidates. */
+export function autoFillNotes(layout: LayoutCell[][], runs: Run[]): void {
+  for (let row = 0; row < layout.length; row++) {
+    for (let col = 0; col < layout[row].length; col++) {
+      const cell = layout[row][col];
+      if (!isPlayCell(cell) || cell.value !== 0) continue;
+      cell.notes = getCandidates(layout, runs, row, col);
+    }
+  }
+}

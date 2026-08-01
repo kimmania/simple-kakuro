@@ -50,6 +50,7 @@ export function bindControlHandlers(handlers: {
   onNewGame: () => void;
   onReset: () => void;
   onNoteMode: () => void;
+  onAutoNotes: () => void;
   onClearNotes: () => void;
   onUndo: () => void;
   onCheatsheet: () => void;
@@ -58,6 +59,7 @@ export function bindControlHandlers(handlers: {
   document.getElementById('new-game')?.addEventListener('click', handlers.onNewGame);
   document.getElementById('reset')?.addEventListener('click', handlers.onReset);
   document.getElementById('note-mode')?.addEventListener('click', handlers.onNoteMode);
+  document.getElementById('auto-notes')?.addEventListener('click', handlers.onAutoNotes);
   document.getElementById('clear-notes')?.addEventListener('click', handlers.onClearNotes);
   document.getElementById('undo')?.addEventListener('click', handlers.onUndo);
   document.getElementById('cheatsheet')?.addEventListener('click', handlers.onCheatsheet);
