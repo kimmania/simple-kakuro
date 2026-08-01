@@ -32,6 +32,13 @@ export function getRunCandidates(
     return value === 0 ? null : value;
   });
 
+  // Sum of filled values strictly after each position — pruning must subtract
+  // these so feasibility checks only measure what the empty cells must reach.
+  const fixedSumAfter: number[] = new Array(run.cells.length).fill(0);
+  for (let i = run.cells.length - 2; i >= 0; i--) {
+    fixedSumAfter[i] = fixedSumAfter[i + 1] + (assignment[i + 1] ?? 0);
+  }
+
   function dfs(pos: number, remainingSum: number, used: Set<number>): void {
     if (pos === run.cells.length) {
       if (remainingSum === 0) {
@@ -41,26 +48,31 @@ export function getRunCandidates(
       return;
     }
 
-    if (assignment[pos] !== null) {
-      const digit = assignment[pos]!;
-      if (used.has(digit)) return;
-      used.add(digit);
-      dfs(pos + 1, remainingSum - digit, used);
-      used.delete(digit);
-      return;
-    }
-
     let emptyCount = 0;
     for (let i = pos; i < run.cells.length; i++) {
       if (assignment[i] === null) emptyCount++;
+    }
+
+    if (assignment[pos] !== null) {
+      const digit = assignment[pos]!;
+      if (used.has(digit)) return;
+      const nextSum = remainingSum - digit;
+      // emptyCount counts only cells after pos (this one is filled).
+      const needed = nextSum - fixedSumAfter[pos];
+      if (needed < minSum(emptyCount) || needed > maxSum(emptyCount)) return;
+      used.add(digit);
+      dfs(pos + 1, nextSum, used);
+      used.delete(digit);
+      return;
     }
 
     for (let digit = 1; digit <= 9; digit++) {
       if (used.has(digit)) continue;
       const nextSum = remainingSum - digit;
       const nextEmpty = emptyCount - 1;
-      if (nextEmpty > 0 && !canAchieveSum(nextSum, nextEmpty, new Set([...used, digit]))) continue;
-      if (nextEmpty === 0 && nextSum !== 0) continue;
+      const needed = nextSum - fixedSumAfter[pos];
+      if (nextEmpty > 0 && !canAchieveSum(needed, nextEmpty, new Set([...used, digit]))) continue;
+      if (nextEmpty === 0 && needed !== 0) continue;
 
       assignment[pos] = digit;
       used.add(digit);

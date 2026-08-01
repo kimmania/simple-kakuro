@@ -112,6 +112,21 @@ describe('runs and candidates', () => {
     const candidates = getRunCandidates(state.layout, run, empty.row, empty.col);
     expect(candidates.size).toBeGreaterThan(0);
   });
+
+  it('computes run candidates with givens in a 3+ cell run', () => {
+    // Regression: the DFS used to inflate the remaining-empty count when it
+    // skipped over filled cells, so runs with givens returned zero candidates
+    // and auto-prune wiped every note in the run's empty cells.
+    const layout = parseLayout([['r20', '.', '.', '9']]);
+    const [run] = extractRuns(layout);
+    expect(run).toBeDefined();
+
+    // 20 − 9 = 11 across two distinct empty cells: valid pairs (3,8)…(8,3)
+    // — 2 is excluded (its partner 9 repeats the given) and 9 is taken.
+    const expected = new Set([3, 4, 5, 6, 7, 8]);
+    expect(getRunCandidates(layout, run, 0, 1)).toEqual(expected);
+    expect(getRunCandidates(layout, run, 0, 2)).toEqual(expected);
+  });
 });
 
 describe('pickRandomPuzzle', () => {
