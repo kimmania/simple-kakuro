@@ -1,7 +1,7 @@
 import type { GameState } from './kakuro/types';
 import { isPlayCell } from './kakuro/types';
 import { clearNotesOnEmptyCells } from './kakuro/candidates';
-import { commitValue, eraseCell, toggleNote } from './kakuro/candidates';
+import { commitValue, eraseCell, getCandidates, toggleNote } from './kakuro/candidates';
 import { pruneAllNotes } from './kakuro/candidates';
 import { applySnapshot, captureSnapshot, type HistorySnapshot } from './kakuro/history';
 import { resetGameState, startNewGame } from './kakuro/puzzle';
@@ -30,6 +30,7 @@ import {
   setActiveDigit,
   setDifficulty,
   setNoteMode,
+  setNumpadCandidates,
   setUndoEnabled,
   showWinBanner,
   updateMistakes,
@@ -296,6 +297,15 @@ export class KakuroApp {
     );
   }
 
+  /** Candidates for the selected cell, or null when dimming doesn't apply. */
+  private getSelectedCandidates(): Set<number> | null {
+    if (!this.state?.selected || this.state.status === 'won') return null;
+    const { row, col } = this.state.selected;
+    const cell = this.state.layout[row][col];
+    if (!isPlayCell(cell) || cell.given || cell.value !== 0) return null;
+    return getCandidates(this.state.layout, this.state.runs, row, col);
+  }
+
   private refresh(): void {
     if (!this.state) return;
 
@@ -303,6 +313,7 @@ export class KakuroApp {
     updateMistakes(this.state.mistakes);
     updatePuzzleId(this.state.puzzle.id);
     updateRunInfo(this.getSelectedRunSummaries());
+    setNumpadCandidates(this.getSelectedCandidates());
     setNoteMode(this.state.noteMode);
     setActiveDigit(this.activeDigit);
     setUndoEnabled(this.lastSnapshot !== null);

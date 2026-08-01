@@ -88,6 +88,15 @@ export function setActiveDigit(digit: number | null): void {
   });
 }
 
+/** Dims numpad digits that cannot go in the selected cell; null clears dimming. */
+export function setNumpadCandidates(candidates: Set<number> | null): void {
+  document.querySelectorAll('.numpad-btn[data-digit]').forEach((btn) => {
+    const el = btn as HTMLElement;
+    const value = parseInt(el.dataset.digit ?? '', 10);
+    el.classList.toggle('dimmed', candidates !== null && !candidates.has(value));
+  });
+}
+
 function formatRunSummary(summary: RunSummary): string {
   const label = summary.direction === 'across' ? 'Across' : 'Down';
   if (summary.placed === 0) {

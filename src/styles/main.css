@@ -465,6 +465,14 @@ body {
   border-color: var(--accent);
 }
 
+.numpad-btn.dimmed {
+  opacity: 0.35;
+}
+
+.numpad-btn.dimmed.active {
+  opacity: 1;
+}
+
 .numpad-erase {
   grid-column: 1 / -1;
   min-height: 38px;
