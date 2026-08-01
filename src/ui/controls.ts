@@ -20,7 +20,6 @@ export function updateMistakes(count: number): void {
 export function updatePuzzleId(id: string): void {
   const label = id ? `#${id}` : '';
   document.getElementById('puzzle-id')?.replaceChildren(document.createTextNode(label));
-  document.getElementById('puzzle-id-footer')?.replaceChildren(document.createTextNode(label));
 }
 
 export function setNoteMode(active: boolean): void {

@@ -458,10 +458,6 @@ body {
   font-size: 0.9rem;
 }
 
-.footer {
-  display: none;
-}
-
 .cheatsheet-overlay {
   position: fixed;
   inset: 0;
@@ -724,11 +720,6 @@ body {
   .numpad-erase {
     grid-column: span 3;
     min-height: 56px;
-  }
-
-  .footer {
-    display: block;
-    text-align: center;
   }
 
   .cheatsheet-panel,
