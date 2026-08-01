@@ -6,6 +6,7 @@ import {
 } from '../kakuro/combinations';
 
 let entries: CheatsheetEntry[] | null = null;
+let lastTrigger: HTMLElement | null = null;
 
 function createCheatsheetItem(
   entry: CheatsheetEntry,
@@ -68,6 +69,7 @@ function renderList(highlight?: { sum: number; length: number }): void {
 }
 
 export function openCheatsheet(highlight?: { sum: number; length: number }): void {
+  lastTrigger = document.activeElement as HTMLElement | null;
   const overlay = getOverlay();
   const panel = getPanel();
   overlay.classList.remove('hidden');
@@ -82,14 +84,18 @@ export function openCheatsheet(highlight?: { sum: number; length: number }): voi
   }
 
   renderList(highlight);
+  document.getElementById('cheatsheet-close')?.focus();
 }
 
 export function closeCheatsheet(): void {
   const overlay = getOverlay();
   const panel = getPanel();
+  if (panel.classList.contains('hidden')) return;
   overlay.classList.add('hidden');
   panel.classList.add('hidden');
   overlay.setAttribute('aria-hidden', 'true');
+  lastTrigger?.focus();
+  lastTrigger = null;
 }
 
 export function bindCheatsheetHandlers(): void {

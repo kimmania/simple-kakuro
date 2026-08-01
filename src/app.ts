@@ -11,6 +11,7 @@ import {
   bindBoardClick,
   createBoard,
   findNextPlayCell,
+  focusSelectedCell,
   getSelectedRunInfo,
   renderBoard,
 } from './ui/board';
@@ -119,7 +120,7 @@ export class KakuroApp {
     this.lastSnapshot = captureSnapshot(this.state);
   }
 
-  private selectCell(row: number, col: number): void {
+  private selectCell(row: number, col: number, moveFocus = false): void {
     if (!this.state || this.state.status === 'won') return;
     if (!isPlayCell(this.state.layout[row][col])) return;
 
@@ -127,6 +128,7 @@ export class KakuroApp {
     const value = this.state.layout[row][col].value;
     this.activeDigit = value !== 0 ? value : this.activeDigit;
     this.refresh();
+    if (moveFocus) focusSelectedCell(this.board, row, col);
   }
 
   private toggleNoteMode(): void {
@@ -226,7 +228,14 @@ export class KakuroApp {
     if (!this.state || this.state.status === 'won') return;
 
     const target = event.target as HTMLElement;
-    if (target.tagName === 'SELECT') return;
+    if (
+      target.tagName === 'SELECT' ||
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.isContentEditable
+    ) {
+      return;
+    }
 
     if ((event.metaKey || event.ctrlKey) && event.key === 'z') {
       event.preventDefault();
@@ -274,7 +283,7 @@ export class KakuroApp {
 
     if (!next) return;
     event.preventDefault();
-    this.selectCell(next.row, next.col);
+    this.selectCell(next.row, next.col, true);
   }
 
   private refresh(): void {

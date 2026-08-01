@@ -1,4 +1,4 @@
-import type { GameState } from '../kakuro/types';
+import type { GameState, LayoutCell } from '../kakuro/types';
 import { isPlayCell } from '../kakuro/types';
 import {
   getConflictCells,
@@ -50,6 +50,7 @@ function ensureBoardSize(board: BoardElements, state: GameState): void {
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.setAttribute('role', 'gridcell');
+      cell.id = `cell-${row}-${col}`;
       cell.dataset.row = String(row);
       cell.dataset.col = String(col);
       cell.tabIndex = -1;
@@ -91,6 +92,22 @@ function ensureBoardSize(board: BoardElements, state: GameState): void {
   }
 }
 
+function cellAriaLabel(layoutCell: LayoutCell, row: number, col: number): string {
+  const pos = `Row ${row + 1}, column ${col + 1}`;
+  if (layoutCell.kind === 'blocked') return `${pos}, block`;
+  if (layoutCell.kind === 'clue') {
+    const parts: string[] = [];
+    if (layoutCell.down !== undefined) parts.push(`down sum ${layoutCell.down}`);
+    if (layoutCell.right !== undefined) parts.push(`across sum ${layoutCell.right}`);
+    return `${pos}, clue, ${parts.join(', ')}`;
+  }
+  if (layoutCell.value !== 0) {
+    return `${pos}, ${layoutCell.given ? 'given' : 'value'} ${layoutCell.value}`;
+  }
+  const notes = [...layoutCell.notes].sort((a, b) => a - b);
+  return notes.length > 0 ? `${pos}, empty, notes ${notes.join(' ')}` : `${pos}, empty`;
+}
+
 export function renderBoard(
   board: BoardElements,
   state: GameState,
@@ -108,6 +125,11 @@ export function renderBoard(
       ? getDigitHighlightCells(state.layout, highlightDigit)
       : new Set<string>();
 
+  board.container.setAttribute(
+    'aria-activedescendant',
+    state.selected ? `cell-${state.selected.row}-${state.selected.col}` : '',
+  );
+
   for (let row = 0; row < state.rows; row++) {
     for (let col = 0; col < state.cols; col++) {
       const key = `${row},${col}`;
@@ -120,17 +142,14 @@ export function renderBoard(
       const noteSpans = board.noteSpans[row][col]!;
 
       cellEl.className = 'cell';
+      cellEl.setAttribute('aria-label', cellAriaLabel(layoutCell, row, col));
+      const isSelected = state.selected?.row === row && state.selected?.col === col;
+      cellEl.setAttribute('aria-selected', String(isSelected));
       cellEl.classList.toggle('blocked', layoutCell.kind === 'blocked');
       cellEl.classList.toggle('clue', layoutCell.kind === 'clue');
       cellEl.classList.toggle('play', layoutCell.kind === 'play');
-      cellEl.classList.toggle(
-        'selected',
-        state.selected?.row === row && state.selected?.col === col,
-      );
-      cellEl.classList.toggle(
-        'related',
-        related.has(key) && !(state.selected?.row === row && state.selected?.col === col),
-      );
+      cellEl.classList.toggle('selected', isSelected);
+      cellEl.classList.toggle('related', related.has(key) && !isSelected);
       cellEl.classList.toggle('conflict', conflicts.has(key));
       cellEl.classList.toggle('wrong', wrong.has(key));
       cellEl.classList.toggle('digit-highlight', digitCells.has(key));
@@ -205,6 +224,10 @@ export function bindBoardClick(
     if (Number.isNaN(row) || Number.isNaN(col)) return;
     onSelect(row, col);
   });
+}
+
+export function focusSelectedCell(board: BoardElements, row: number, col: number): void {
+  board.cells[row]?.[col]?.focus({ preventScroll: true });
 }
 
 export function findNextPlayCell(

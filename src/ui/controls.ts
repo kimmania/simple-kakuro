@@ -40,6 +40,10 @@ export function showWinBanner(show: boolean): void {
   const banner = document.getElementById('win-banner');
   if (!banner) return;
   banner.classList.toggle('hidden', !show);
+  // Text is injected on show (and removed on hide) so the polite live region
+  // announces the completion instead of relying on a visibility toggle.
+  const text = document.getElementById('win-text');
+  if (text) text.textContent = show ? 'Puzzle complete!' : '';
 }
 
 export function bindControlHandlers(handlers: {
