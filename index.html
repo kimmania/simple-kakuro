@@ -14,7 +14,7 @@
       name="description"
       content="Mobile-first Kakuro with notes, combination cheatsheet, and three difficulty levels."
     />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <title>Simple Kakuro</title>
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
@@ -57,6 +57,12 @@
             class="btn btn-secondary"
             >More Games →</a>
         </div>
+      </div>
+
+      <div id="update-toast" class="update-toast hidden" role="status">
+        <span>A new version is available.</span>
+        <button type="button" id="update-reload" class="btn btn-primary">Reload</button>
+        <button type="button" id="update-dismiss" class="btn" aria-label="Dismiss">Later</button>
       </div>
 
       <main class="game-area">

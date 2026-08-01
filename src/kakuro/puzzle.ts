@@ -6,11 +6,20 @@ import { RECENT_PUZZLE_COUNT } from './types';
 const puzzleCache = new Map<Difficulty, KakuroPuzzle[]>();
 const recentKey = (difficulty: Difficulty) => `simple-kakuro-recent-${difficulty}`;
 
+/**
+ * Bump when the puzzle banks are regenerated. The service worker caches
+ * puzzle JSON with CacheFirst, and the browser HTTP cache can serve stale
+ * identical URLs — a changed query string busts both.
+ */
+const PUZZLE_BANK_VERSION = 1;
+
 export async function loadPuzzles(difficulty: Difficulty): Promise<KakuroPuzzle[]> {
   const cached = puzzleCache.get(difficulty);
   if (cached) return cached;
 
-  const response = await fetch(`${import.meta.env.BASE_URL}puzzles/${difficulty}.json`);
+  const response = await fetch(
+    `${import.meta.env.BASE_URL}puzzles/${difficulty}.json?v=${PUZZLE_BANK_VERSION}`,
+  );
   if (!response.ok) {
     throw new Error(`Failed to load puzzles for ${difficulty}`);
   }

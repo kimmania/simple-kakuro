@@ -5,7 +5,7 @@ export default defineConfig({
   base: '/simple-kakuro/',
   plugins: [
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['icons/apple-touch-icon.png'],
       manifest: {
         name: 'Simple Kakuro',
